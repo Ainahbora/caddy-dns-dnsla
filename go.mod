@@ -1,4 +1,4 @@
-module caddy-dns-dnsla
+module github.com/Ainahbora/caddy-dns-dnsla
 
 go 1.24
 require github.com/caddyserver/caddy/v2 v2.4.1
