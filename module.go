@@ -2,20 +2,19 @@ package template
 
 import (
 	"fmt"
-
-	libdnsla "github.com/Ainahbora/libdnsla"
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	libdnsla "github.com/r6c/dnsla"
 )
 
-// Provider lets Caddy read and manipulate DNS records hosted by this DNS provider.
-type Provider struct{ *libdnsla.Provider }
+type Provider struct {
+	*libdnsla.Provider
+}
 
 func init() {
 	caddy.RegisterModule(Provider{})
 }
 
-// CaddyModule returns the Caddy module information.
 func (Provider) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "dns.providers.dnsla",
@@ -23,37 +22,35 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 	}
 }
 
-// TODO: This is just an example. Useful to allow env variable placeholders; update accordingly.
-// Provision sets up the module. Implements caddy.Provisioner.
 func (p *Provider) Provision(ctx caddy.Context) error {
-	p.Provider.APIToken = caddy.NewReplacer().ReplaceAll(p.Provider.APIToken, "")
+	p.Provider.APIID = caddy.NewReplacer().ReplaceAll(p.Provider.APIID, "")
+	p.Provider.APISecret = caddy.NewReplacer().ReplaceAll(p.Provider.APISecret, "")
 	return fmt.Errorf("TODO: not implemented")
 }
 
-// TODO: This is just an example. Update accordingly.
-// UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
-//
-//	providername [<api_token>] {
-//	    api_token <api_token>
-//	}
-//
-// **THIS IS JUST AN EXAMPLE AND NEEDS TO BE CUSTOMIZED.**
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
-		if d.NextArg() {
-			p.Provider.APIToken = d.Val()
-		}
 		if d.NextArg() {
 			return d.ArgErr()
 		}
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
 			switch d.Val() {
-			case "api_token":
-				if p.Provider.APIToken != "" {
-					return d.Err("API token already set")
+			case "api_id":
+				if p.Provider.APIID != "" {
+					return d.Err("API ID already set")
 				}
 				if d.NextArg() {
-					p.Provider.APIToken = d.Val()
+					p.Provider.APIID = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "api_secret":
+				if p.Provider.APISecret != "" {
+					return d.Err("API Secret already set")
+				}
+				if d.NextArg() {
+					p.Provider.APISecret = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
@@ -63,13 +60,15 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			}
 		}
 	}
-	if p.Provider.APIToken == "" {
-		return d.Err("missing API token")
+	if p.Provider.APIID == "" {
+		return d.Err("missing API ID")
+	}
+	if p.Provider.APISecret == "" {
+		return d.Err("missing API Secret")
 	}
 	return nil
 }
 
-// Interface guards
 var (
 	_ caddyfile.Unmarshaler = (*Provider)(nil)
 	_ caddy.Provisioner     = (*Provider)(nil)
