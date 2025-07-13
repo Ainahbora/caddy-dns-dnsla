@@ -3,13 +3,13 @@ package template
 import (
 	"fmt"
 
+	libdnsla "github.com/Ainahbora/libdnsla"
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
-	libdnstemplate "github.com/libdns/template"
 )
 
 // Provider lets Caddy read and manipulate DNS records hosted by this DNS provider.
-type Provider struct{ *libdnstemplate.Provider }
+type Provider struct{ *libdnsla.Provider }
 
 func init() {
 	caddy.RegisterModule(Provider{})
@@ -18,8 +18,8 @@ func init() {
 // CaddyModule returns the Caddy module information.
 func (Provider) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		ID:  "dns.providers.template",
-		New: func() caddy.Module { return &Provider{new(libdnstemplate.Provider)} },
+		ID:  "dns.providers.dnsla",
+		New: func() caddy.Module { return &Provider{new(libdnsla.Provider)} },
 	}
 }
 
@@ -33,9 +33,9 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 // TODO: This is just an example. Update accordingly.
 // UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
 //
-// providername [<api_token>] {
-//     api_token <api_token>
-// }
+//	providername [<api_token>] {
+//	    api_token <api_token>
+//	}
 //
 // **THIS IS JUST AN EXAMPLE AND NEEDS TO BE CUSTOMIZED.**
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
