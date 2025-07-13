@@ -1,7 +1,6 @@
 package template
 
 import (
-	"fmt"
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	libdnsla "github.com/r6c/dnsla"
@@ -25,7 +24,8 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 func (p *Provider) Provision(ctx caddy.Context) error {
 	p.Provider.APIID = caddy.NewReplacer().ReplaceAll(p.Provider.APIID, "")
 	p.Provider.APISecret = caddy.NewReplacer().ReplaceAll(p.Provider.APISecret, "")
-	return fmt.Errorf("TODO: not implemented")
+	//return fmt.Errorf("TODO: not implemented")
+	return nil
 }
 
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
